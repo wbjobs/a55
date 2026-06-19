@@ -1,0 +1,152 @@
+{
+	"name": "警戒巡逻",
+	"description": "NPC正常巡逻，听到声音后警戒，看到玩家后追击",
+	"version": "1.0",
+	"created_at": "",
+	"updated_at": "",
+	"root": {
+		"id": "root_alert",
+		"type": "Selector",
+		"name": "RootSelector",
+		"description": "顶层选择：高优先级行为先执行",
+		"properties": {},
+		"position": {"x": 500, "y": 50},
+		"children": [
+			{
+				"id": "node_combat_seq",
+				"type": "Sequence",
+				"name": "战斗序列",
+				"description": "看到玩家时追击",
+				"properties": {},
+				"position": {"x": 150, "y": 180},
+				"children": [
+					{
+						"id": "cond_can_see",
+						"type": "Condition",
+						"name": "CanSeePlayer",
+						"description": "视觉感知检测",
+						"properties": {},
+						"position": {"x": 50, "y": 280},
+						"children": []
+					},
+					{
+						"id": "action_move_to_player_alert",
+						"type": "Action",
+						"name": "MoveToPlayer",
+						"description": "追击玩家",
+						"properties": {
+							"speed": 5.0,
+							"tolerance": 1.5,
+							"target_blackboard_key": "target_position",
+							"use_flow_field": true,
+							"flow_field_weight": 0.8,
+							"timeout": 20.0
+						},
+						"position": {"x": 250, "y": 280},
+						"children": []
+					}
+				]
+			},
+			{
+				"id": "node_alert_seq",
+				"type": "Sequence",
+				"name": "警戒序列",
+				"description": "听到声音时警戒并调查",
+				"properties": {},
+				"position": {"x": 500, "y": 180},
+				"children": [
+					{
+						"id": "cond_heard_sound",
+						"type": "Condition",
+						"name": "HeardSound",
+						"description": "听觉感知检测",
+						"properties": {
+							"tag": ""
+						},
+						"position": {"x": 400, "y": 280},
+						"children": []
+					},
+					{
+						"id": "cond_not_seen",
+						"type": "Inverter",
+						"name": "没看到玩家",
+						"description": "确保不是已经看到玩家",
+						"properties": {},
+						"position": {"x": 550, "y": 280},
+						"children": [
+							{
+								"id": "cond_can_see_inner",
+								"type": "Condition",
+								"name": "CanSeePlayer",
+								"description": "视觉感知检测",
+								"properties": {},
+								"position": {"x": 550, "y": 380},
+								"children": []
+							}
+						]
+					},
+					{
+						"id": "action_look_suspicious",
+						"type": "Action",
+						"name": "Wait",
+						"description": "警觉地观察",
+						"properties": {
+							"duration": 1.0,
+							"timeout": 0.0
+						},
+						"position": {"x": 700, "y": 280},
+						"children": []
+					},
+					{
+						"id": "action_set_sound_target",
+						"type": "Action",
+						"name": "SetBlackboardValue",
+						"description": "设置目标为声音位置",
+						"properties": {
+							"key": "target_position",
+							"value_type": "string",
+							"value": "last_heard_position",
+							"timeout": 0.0
+						},
+						"position": {"x": 850, "y": 280},
+						"children": []
+					},
+					{
+						"id": "action_investigate",
+						"type": "Action",
+						"name": "MoveToPosition",
+						"description": "前往调查",
+						"properties": {
+							"speed": 3.5,
+							"tolerance": 1.0,
+							"target_blackboard_key": "last_heard_position",
+							"stop_on_y": true,
+							"use_flow_field": true,
+							"flow_field_weight": 0.7,
+							"timeout": 10.0
+						},
+						"position": {"x": 1000, "y": 280},
+						"children": []
+					}
+				]
+			},
+			{
+				"id": "node_patrol_alert",
+				"type": "Action",
+				"name": "Patrol",
+				"description": "默认巡逻",
+				"properties": {
+					"speed": 2.0,
+					"patrol_radius": 6.0,
+					"waypoint_count": 4,
+					"wait_time": 2.0,
+					"center_blackboard_key": "home_position",
+					"use_flow_field": false,
+					"timeout": 0.0
+				},
+				"position": {"x": 850, "y": 180},
+				"children": []
+			}
+		]
+	}
+}

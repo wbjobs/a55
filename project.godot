@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 
 GameManager="*res://scripts/autoload/game_manager.gd"
 FlowFieldManager="*res://scripts/pathfinding/flow_field_manager.gd"
+PerceptionSystem="*res://scripts/perception/perception_system.gd"
 
 [editor_plugins]
 

@@ -26,6 +26,7 @@ var _drag_start_node_pos: Vector2 = Vector2.ZERO
 var _is_connecting: bool = false
 var _connecting_from_id: String = ""
 var _connecting_mouse: Vector2 = Vector2.ZERO
+var _clipboard_node: BTNodeData = null
 
 signal node_selected(node_id: String)
 signal tree_modified()
@@ -151,6 +152,9 @@ func _build_canvas() -> void:
 	_add_toolbar_separator()
 	_add_toolbar_button("删除选中", self._on_delete_selected, "删除选中的节点")
 	_add_toolbar_button("断开连线", self._on_disconnect_selected, "断开选中节点的父连接")
+	_add_toolbar_separator()
+	_add_toolbar_button("复制", self._on_copy_selected, "复制选中的节点 (Ctrl+C)")
+	_add_toolbar_button("粘贴", self._on_paste_node, "粘贴节点 (Ctrl+V)")
 	
 	_canvas_scroll = ScrollContainer.new()
 	_canvas_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -320,6 +324,48 @@ func _on_disconnect_selected() -> void:
 	_refresh_canvas()
 	tree_modified.emit()
 
+func _on_copy_selected() -> void:
+	if selected_node_id == "" or not tree_data or not tree_data.root:
+		return
+	var node_data: BTNodeData = tree_data.root.find_node_by_id(selected_node_id)
+	if node_data:
+		_clipboard_node = node_data.duplicate()
+		print("Copied node: %s" % node_data.name)
+
+func _on_paste_node() -> void:
+	if not _clipboard_node or not tree_data:
+		return
+	
+	var new_node: BTNodeData = _clipboard_node.duplicate()
+	_regenerate_node_ids(new_node)
+	new_node.position += Vector2(20, 20)
+	
+	if selected_node_id != "" and tree_data.root:
+		var parent: BTNodeData = tree_data.root.find_node_by_id(selected_node_id)
+		if parent and parent.add_child(new_node):
+			selected_node_id = new_node.id
+			_refresh_canvas()
+			_refresh_property_editor()
+			tree_modified.emit()
+			print("Pasted node as child of: %s" % parent.name)
+			return
+	
+	if tree_data.root == null:
+		tree_data.root = new_node
+	else:
+		tree_data.root.children.append(new_node)
+	
+	selected_node_id = new_node.id
+	_refresh_canvas()
+	_refresh_property_editor()
+	tree_modified.emit()
+	print("Pasted node: %s" % new_node.name)
+
+func _regenerate_node_ids(node: BTNodeData) -> void:
+	node.id = BTNodeData.generate_id()
+	for child in node.children:
+		_regenerate_node_ids(child)
+
 func _set_zoom(z: float) -> void:
 	_zoom = clampf(z, 0.3, 3.0)
 	if _node_layer:
@@ -364,6 +410,14 @@ func _populate_default_condition_properties(node_data: BTNodeData) -> void:
 			node_data.properties = {"health_blackboard_key": "health", "threshold": 30.0, "return_if_no_health": false}
 		"RandomChance":
 			node_data.properties = {"chance": 0.5}
+		"CanSeePlayer":
+			node_data.properties = {}
+		"HeardSound":
+			node_data.properties = {"tag": ""}
+		"IsTouched":
+			node_data.properties = {"require_player": false}
+		"AlertLevel":
+			node_data.properties = {"threshold": 0.5, "comparison": "greater"}
 
 func _populate_default_action_properties(node_data: BTNodeData) -> void:
 	var default_timeout: float = _get_default_timeout_for_action(node_data.name)
@@ -617,6 +671,20 @@ func _is_descendant(ancestor: BTNodeData, node: BTNodeData) -> bool:
 	return false
 
 func _on_canvas_gui_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.is_action_pressed("copy") or (event.ctrl_pressed and event.keycode == KEY_C):
+			_on_copy_selected()
+			return
+		elif event.is_action_pressed("paste") or (event.ctrl_pressed and event.keycode == KEY_V):
+			_on_paste_node()
+			return
+		elif event.keycode == KEY_DELETE:
+			_on_delete_selected()
+			return
+		elif event.ctrl_pressed and event.keycode == KEY_D:
+			_on_duplicate_node()
+			return
+	
 	if event is InputEventMouseButton:
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			selected_node_id = ""
@@ -629,6 +697,12 @@ func _on_canvas_gui_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion and _is_connecting:
 		_connecting_mouse = event.position
 		_draw_layer.queue_redraw()
+
+func _on_duplicate_node() -> void:
+	if selected_node_id == "" or not tree_data or not tree_data.root:
+		return
+	_on_copy_selected()
+	_on_paste_node()
 
 func _on_draw_layer_draw() -> void:
 	if not tree_data or not tree_data.root:

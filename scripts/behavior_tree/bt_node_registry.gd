@@ -18,6 +18,10 @@ static func _register_conditions() -> void:
 	_conditions["HasReachedTarget"] = preload("res://scripts/behavior_tree/conditions/condition_has_reached_target.gd")
 	_conditions["IsLowHealth"] = preload("res://scripts/behavior_tree/conditions/condition_low_health.gd")
 	_conditions["RandomChance"] = preload("res://scripts/behavior_tree/conditions/condition_random_chance.gd")
+	_conditions["CanSeePlayer"] = preload("res://scripts/behavior_tree/conditions/condition_can_see_player.gd")
+	_conditions["HeardSound"] = preload("res://scripts/behavior_tree/conditions/condition_heard_sound.gd")
+	_conditions["IsTouched"] = preload("res://scripts/behavior_tree/conditions/condition_touched.gd")
+	_conditions["AlertLevel"] = preload("res://scripts/behavior_tree/conditions/condition_alert_level.gd")
 
 static func _register_actions() -> void:
 	_actions["MoveToPosition"] = preload("res://scripts/behavior_tree/actions/action_move_to_position.gd")
