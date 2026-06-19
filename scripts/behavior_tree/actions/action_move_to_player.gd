@@ -9,4 +9,5 @@ func execute(context: BTContext) -> int:
 	context.set_blackboard(String(get_property("target_blackboard_key", "target_position")), player.global_position)
 	
 	var move_action := ActionMoveToPosition.new(data)
+	move_action.data.properties = data.properties.duplicate(true)
 	return move_action.execute(context)

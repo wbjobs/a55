@@ -11,6 +11,8 @@ func execute(context: BTContext) -> int:
 	var target_key: String = String(get_property("target_blackboard_key", "target_position"))
 	var tolerance: float = float(get_property("tolerance", 0.3))
 	var stop_on_y: bool = bool(get_property("stop_on_y", true))
+	var use_flow_field: bool = bool(get_property("use_flow_field", false))
+	var flow_field_weight: float = float(get_property("flow_field_weight", 0.7))
 	
 	var target: Variant = context.get_blackboard(target_key)
 	if target == null:
@@ -33,7 +35,17 @@ func execute(context: BTContext) -> int:
 	if distance <= tolerance:
 		return BTNodeState.State.SUCCESS
 	
-	var direction: Vector3 = to_target.normalized()
+	var direction: Vector3
+	if use_flow_field and FlowFieldManager:
+		var flow_dir: Vector3 = FlowFieldManager.get_direction(owner_3d.global_position, target_pos)
+		if flow_dir.length() > 0.01:
+			var straight_dir: Vector3 = to_target.normalized()
+			direction = flow_dir.lerp(straight_dir, 1.0 - flow_field_weight).normalized()
+		else:
+			direction = to_target.normalized()
+	else:
+		direction = to_target.normalized()
+	
 	var move_step: float = min(speed * context.delta_time, distance)
 	owner_3d.global_position += direction * move_step
 	

@@ -61,7 +61,11 @@
 						"description": "移动向玩家",
 						"properties": {
 							"speed": 4.5,
-							"tolerance": 1.5
+							"tolerance": 1.5,
+							"target_blackboard_key": "target_position",
+							"use_flow_field": true,
+							"flow_field_weight": 0.8,
+							"timeout": 15.0
 						},
 						"position": {"x": 350, "y": 250},
 						"children": []
@@ -97,7 +101,11 @@
 						"properties": {
 							"speed": 2.5,
 							"tolerance": 0.5,
-							"target_blackboard_key": "home_position"
+							"target_blackboard_key": "home_position",
+							"stop_on_y": true,
+							"use_flow_field": false,
+							"flow_field_weight": 0.7,
+							"timeout": 10.0
 						},
 						"position": {"x": 600, "y": 250},
 						"children": []

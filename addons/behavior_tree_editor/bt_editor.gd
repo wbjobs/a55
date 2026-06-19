@@ -366,27 +366,51 @@ func _populate_default_condition_properties(node_data: BTNodeData) -> void:
 			node_data.properties = {"chance": 0.5}
 
 func _populate_default_action_properties(node_data: BTNodeData) -> void:
+	var default_timeout: float = _get_default_timeout_for_action(node_data.name)
 	match node_data.name:
 		"MoveToPosition":
-			node_data.properties = {"speed": 3.0, "tolerance": 0.3, "target_blackboard_key": "target_position", "stop_on_y": true}
+			node_data.properties = {"speed": 3.0, "tolerance": 0.3, "target_blackboard_key": "target_position", "stop_on_y": true, "use_flow_field": false, "flow_field_weight": 0.7, "timeout": default_timeout}
 		"MoveToPlayer":
-			node_data.properties = {"speed": 3.0, "tolerance": 0.3, "target_blackboard_key": "target_position"}
+			node_data.properties = {"speed": 3.0, "tolerance": 0.3, "target_blackboard_key": "target_position", "use_flow_field": true, "flow_field_weight": 0.8, "timeout": default_timeout}
 		"Patrol":
-			node_data.properties = {"speed": 2.0, "patrol_radius": 5.0, "waypoint_count": 4, "wait_time": 2.0, "center_blackboard_key": "home_position"}
+			node_data.properties = {"speed": 2.0, "patrol_radius": 5.0, "waypoint_count": 4, "wait_time": 2.0, "center_blackboard_key": "home_position", "use_flow_field": false, "timeout": default_timeout}
 		"PlayAnimation":
-			node_data.properties = {"animation_name": "idle", "wait_for_finish": false}
+			node_data.properties = {"animation_name": "idle", "wait_for_finish": false, "timeout": default_timeout}
 		"Wait":
-			node_data.properties = {"duration": 1.0}
+			node_data.properties = {"duration": 1.0, "timeout": default_timeout}
 		"FleeFromPlayer":
-			node_data.properties = {"speed": 4.0, "safe_distance": 15.0}
+			node_data.properties = {"speed": 4.0, "safe_distance": 15.0, "use_flow_field": true, "flee_search_distance": 8.0, "timeout": default_timeout}
 		"LookAtPlayer":
-			node_data.properties = {"lerp_speed": 5.0, "instant": false}
+			node_data.properties = {"lerp_speed": 5.0, "instant": false, "timeout": default_timeout}
 		"Idle":
-			node_data.properties = {"duration": -1.0}
+			node_data.properties = {"duration": -1.0, "timeout": default_timeout}
 		"SetBlackboardValue":
-			node_data.properties = {"key": "", "value_type": "string", "value": ""}
+			node_data.properties = {"key": "", "value_type": "string", "value": "", "timeout": default_timeout}
 		_:
-			node_data.properties = {}
+			node_data.properties = {"timeout": default_timeout}
+
+func _get_default_timeout_for_action(action_name: String) -> float:
+	match action_name:
+		"MoveToPosition":
+			return 10.0
+		"MoveToPlayer":
+			return 15.0
+		"Patrol":
+			return 0.0
+		"PlayAnimation":
+			return 5.0
+		"Wait":
+			return 0.0
+		"FleeFromPlayer":
+			return 0.0
+		"LookAtPlayer":
+			return 0.0
+		"Idle":
+			return 0.0
+		"SetBlackboardValue":
+			return 0.0
+		_:
+			return 0.0
 
 func _add_node_to_tree(node_data: BTNodeData) -> void:
 	if not tree_data:

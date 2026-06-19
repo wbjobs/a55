@@ -38,7 +38,9 @@
 						"name": "LookAtPlayer",
 						"description": "朝向玩家",
 						"properties": {
-							"instant": true
+							"instant": true,
+							"lerp_speed": 5.0,
+							"timeout": 0.0
 						},
 						"position": {"x": 200, "y": 250},
 						"children": []
@@ -49,7 +51,8 @@
 						"name": "Wait",
 						"description": "驻足观察",
 						"properties": {
-							"duration": 1.5
+							"duration": 1.5,
+							"timeout": 0.0
 						},
 						"position": {"x": 350, "y": 250},
 						"children": []
@@ -65,7 +68,10 @@
 					"speed": 2.0,
 					"patrol_radius": 6.0,
 					"waypoint_count": 4,
-					"wait_time": 2.0
+					"wait_time": 2.0,
+					"center_blackboard_key": "home_position",
+					"use_flow_field": false,
+					"timeout": 0.0
 				},
 				"position": {"x": 600, "y": 150},
 				"children": []

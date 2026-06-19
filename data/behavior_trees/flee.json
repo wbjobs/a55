@@ -52,7 +52,10 @@
 						"description": "逃离玩家",
 						"properties": {
 							"speed": 5.0,
-							"safe_distance": 18.0
+							"safe_distance": 18.0,
+							"use_flow_field": true,
+							"flee_search_distance": 8.0,
+							"timeout": 0.0
 						},
 						"position": {"x": 350, "y": 250},
 						"children": []
@@ -92,7 +95,8 @@
 								"name": "Wait",
 								"description": "发呆3秒",
 								"properties": {
-									"duration": 3.0
+									"duration": 3.0,
+									"timeout": 0.0
 								},
 								"position": {"x": 520, "y": 350},
 								"children": []
@@ -108,7 +112,10 @@
 							"speed": 1.5,
 							"patrol_radius": 4.0,
 							"waypoint_count": 3,
-							"wait_time": 3.0
+							"wait_time": 3.0,
+							"center_blackboard_key": "home_position",
+							"use_flow_field": false,
+							"timeout": 0.0
 						},
 						"position": {"x": 650, "y": 250},
 						"children": []
