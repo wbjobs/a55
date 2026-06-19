@@ -1,0 +1,120 @@
+{
+	"name": "逃跑",
+	"description": "NPC发现玩家靠近时逃跑，远离后巡逻",
+	"version": "1.0",
+	"created_at": "",
+	"updated_at": "",
+	"root": {
+		"id": "root_flee",
+		"type": "Selector",
+		"name": "RootSelector",
+		"description": "顶层选择节点：逃跑优先",
+		"properties": {},
+		"position": {"x": 400, "y": 50},
+		"children": [
+			{
+				"id": "node_flee_seq",
+				"type": "Sequence",
+				"name": "逃跑行为序列",
+				"description": "玩家靠近时逃跑",
+				"properties": {},
+				"position": {"x": 200, "y": 150},
+				"children": [
+					{
+						"id": "cond_player_close",
+						"type": "Condition",
+						"name": "IsDistanceToPlayer",
+						"description": "检测玩家是否太近",
+						"properties": {
+							"min_distance": 0.0,
+							"max_distance": 8.0,
+							"return_if_no_player": false
+						},
+						"position": {"x": 50, "y": 250},
+						"children": []
+					},
+					{
+						"id": "cond_low_health",
+						"type": "Condition",
+						"name": "IsLowHealth",
+						"description": "血量低时才逃跑（可选条件）",
+						"properties": {
+							"threshold": 100.0,
+							"return_if_no_health": true
+						},
+						"position": {"x": 200, "y": 250},
+						"children": []
+					},
+					{
+						"id": "action_flee",
+						"type": "Action",
+						"name": "FleeFromPlayer",
+						"description": "逃离玩家",
+						"properties": {
+							"speed": 5.0,
+							"safe_distance": 18.0
+						},
+						"position": {"x": 350, "y": 250},
+						"children": []
+					}
+				]
+			},
+			{
+				"id": "node_idle_patrol",
+				"type": "Selector",
+				"name": "空闲或巡逻",
+				"description": "随机选择巡逻或发呆",
+				"properties": {},
+				"position": {"x": 550, "y": 150},
+				"children": [
+					{
+						"id": "node_random_idle",
+						"type": "Sequence",
+						"name": "随机发呆",
+						"description": "30%概率发呆",
+						"properties": {},
+						"position": {"x": 450, "y": 250},
+						"children": [
+							{
+								"id": "cond_random_30",
+								"type": "Condition",
+								"name": "RandomChance",
+								"description": "30%概率触发",
+								"properties": {
+									"chance": 0.3
+								},
+								"position": {"x": 380, "y": 350},
+								"children": []
+							},
+							{
+								"id": "action_idle_wait",
+								"type": "Action",
+								"name": "Wait",
+								"description": "发呆3秒",
+								"properties": {
+									"duration": 3.0
+								},
+								"position": {"x": 520, "y": 350},
+								"children": []
+							}
+						]
+					},
+					{
+						"id": "action_calm_patrol",
+						"type": "Action",
+						"name": "Patrol",
+						"description": "慢速巡逻",
+						"properties": {
+							"speed": 1.5,
+							"patrol_radius": 4.0,
+							"waypoint_count": 3,
+							"wait_time": 3.0
+						},
+						"position": {"x": 650, "y": 250},
+						"children": []
+					}
+				]
+			}
+		]
+	}
+}

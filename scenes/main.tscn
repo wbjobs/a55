@@ -1,0 +1,110 @@
+[gd_scene load_steps=11 format=3 uid="uid://bmainscene01"]
+
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player_scene"]
+[ext_resource type="PackedScene" path="res://scenes/npc.tscn" id="2_npc_scene"]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.3, 0.5, 0.7, 1)
+ambient_light_source = 1
+ambient_light_color = Color(0.6, 0.7, 0.9, 1)
+ambient_light_energy = 0.7
+tonemap_mode = 2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ground"]
+size = Vector3(100, 1, 100)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ground"]
+albedo_color = Color(0.3, 0.5, 0.3, 1)
+roughness = 1.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_ground"]
+size = Vector3(100, 1, 100)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_crate"]
+size = Vector3(2, 2, 2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crate"]
+albedo_color = Color(0.6, 0.4, 0.2, 1)
+roughness = 0.8
+
+[sub_resource type="BoxMesh" id="BoxMesh_crate"]
+size = Vector3(2, 2, 2)
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 15, 0)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+position = Vector3(0, -0.5, 0)
+shape = SubResource("BoxShape3D_ground")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+position = Vector3(0, -0.5, 0)
+mesh = SubResource("BoxMesh_ground")
+material_override = SubResource("StandardMaterial3D_ground")
+
+[node name="Player" parent="." instance=ExtResource("1_player_scene")]
+position = Vector3(0, 2, 0)
+
+[node name="NPC_Guard1" parent="." instance=ExtResource("2_npc_scene")]
+position = Vector3(-8, 0, -8)
+npc_name = "Guard1"
+display_color = Color(0.9, 0.6, 0.2, 1)
+behavior_tree_path = "res://data/behavior_trees/guard_patrol.json"
+
+[node name="NPC_Guard2" parent="." instance=ExtResource("2_npc_scene")]
+position = Vector3(8, 0, -8)
+npc_name = "Guard2"
+display_color = Color(0.9, 0.6, 0.2, 1)
+behavior_tree_path = "res://data/behavior_trees/guard_patrol.json"
+
+[node name="NPC_Chaser" parent="." instance=ExtResource("2_npc_scene")]
+position = Vector3(0, 0, 10)
+npc_name = "Chaser"
+display_color = Color(0.9, 0.2, 0.2, 1)
+behavior_tree_path = "res://data/behavior_trees/chase_player.json"
+
+[node name="NPC_Flee" parent="." instance=ExtResource("2_npc_scene")]
+position = Vector3(12, 0, 8)
+npc_name = "Fleeer"
+display_color = Color(0.2, 0.6, 0.9, 1)
+behavior_tree_path = "res://data/behavior_trees/flee.json"
+
+[node name="Crate1" type="StaticBody3D" parent="."]
+position = Vector3(-5, 1, 5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Crate1"]
+shape = SubResource("BoxShape3D_crate")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Crate1"]
+mesh = SubResource("BoxMesh_crate")
+material_override = SubResource("StandardMaterial3D_crate")
+
+[node name="Crate2" type="StaticBody3D" parent="."]
+position = Vector3(5, 1, 3)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Crate2"]
+shape = SubResource("BoxShape3D_crate")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Crate2"]
+mesh = SubResource("BoxMesh_crate")
+material_override = SubResource("StandardMaterial3D_crate")
+
+[node name="Crate3" type="StaticBody3D" parent="."]
+position = Vector3(-10, 1, 8)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Crate3"]
+shape = SubResource("BoxShape3D_crate")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Crate3"]
+mesh = SubResource("BoxMesh_crate")
+material_override = SubResource("StandardMaterial3D_crate")

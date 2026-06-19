@@ -1,0 +1,75 @@
+{
+	"name": "站岗巡逻",
+	"description": "NPC在固定区域内巡逻，发现玩家后驻足观察",
+	"version": "1.0",
+	"created_at": "",
+	"updated_at": "",
+	"root": {
+		"id": "root_guard",
+		"type": "Selector",
+		"name": "RootSelector",
+		"description": "顶层选择节点：优先执行高优先级行为",
+		"properties": {},
+		"position": {"x": 400, "y": 50},
+		"children": [
+			{
+				"id": "node_see_player_seq",
+				"type": "Sequence",
+				"name": "发现玩家序列",
+				"description": "发现玩家时执行的行为",
+				"properties": {},
+				"position": {"x": 200, "y": 150},
+				"children": [
+					{
+						"id": "cond_player_in_sight",
+						"type": "Condition",
+						"name": "IsPlayerInSight",
+						"description": "检测玩家是否在视野内",
+						"properties": {
+							"vision_range": 12.0,
+							"vision_angle": 90.0
+						},
+						"position": {"x": 50, "y": 250},
+						"children": []
+					},
+					{
+						"id": "action_look_at_player",
+						"type": "Action",
+						"name": "LookAtPlayer",
+						"description": "朝向玩家",
+						"properties": {
+							"instant": true
+						},
+						"position": {"x": 200, "y": 250},
+						"children": []
+					},
+					{
+						"id": "action_wait_observe",
+						"type": "Action",
+						"name": "Wait",
+						"description": "驻足观察",
+						"properties": {
+							"duration": 1.5
+						},
+						"position": {"x": 350, "y": 250},
+						"children": []
+					}
+				]
+			},
+			{
+				"id": "node_patrol",
+				"type": "Action",
+				"name": "Patrol",
+				"description": "默认巡逻行为",
+				"properties": {
+					"speed": 2.0,
+					"patrol_radius": 6.0,
+					"waypoint_count": 4,
+					"wait_time": 2.0
+				},
+				"position": {"x": 600, "y": 150},
+				"children": []
+			}
+		]
+	}
+}

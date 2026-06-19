@@ -1,0 +1,109 @@
+{
+	"name": "追踪玩家",
+	"description": "NPC发现玩家后持续追击，失去目标后返回原位",
+	"version": "1.0",
+	"created_at": "",
+	"updated_at": "",
+	"root": {
+		"id": "root_chase",
+		"type": "Selector",
+		"name": "RootSelector",
+		"description": "顶层选择节点",
+		"properties": {},
+		"position": {"x": 400, "y": 50},
+		"children": [
+			{
+				"id": "node_chase_seq",
+				"type": "Sequence",
+				"name": "追击行为序列",
+				"description": "发现玩家后追击",
+				"properties": {},
+				"position": {"x": 200, "y": 150},
+				"children": [
+					{
+						"id": "cond_player_in_sight_chase",
+						"type": "Condition",
+						"name": "IsPlayerInSight",
+						"description": "检测玩家是否在视野内",
+						"properties": {
+							"vision_range": 20.0,
+							"vision_angle": 120.0
+						},
+						"position": {"x": 50, "y": 250},
+						"children": []
+					},
+					{
+						"id": "cond_close_enough",
+						"type": "Inverter",
+						"name": "距离足够近取反",
+						"description": "当玩家距离不够近时才移动",
+						"properties": {},
+						"position": {"x": 200, "y": 250},
+						"children": [
+							{
+								"id": "cond_distance_close",
+								"type": "Condition",
+								"name": "IsDistanceToPlayer",
+								"description": "检测距离是否足够近",
+								"properties": {
+									"min_distance": 0.0,
+									"max_distance": 2.0
+								},
+								"position": {"x": 200, "y": 350},
+								"children": []
+							}
+						]
+					},
+					{
+						"id": "action_move_to_player",
+						"type": "Action",
+						"name": "MoveToPlayer",
+						"description": "移动向玩家",
+						"properties": {
+							"speed": 4.5,
+							"tolerance": 1.5
+						},
+						"position": {"x": 350, "y": 250},
+						"children": []
+					}
+				]
+			},
+			{
+				"id": "node_return_home",
+				"type": "Sequence",
+				"name": "返回原位序列",
+				"description": "未发现玩家时返回原位",
+				"properties": {},
+				"position": {"x": 550, "y": 150},
+				"children": [
+					{
+						"id": "action_set_home_target",
+						"type": "Action",
+						"name": "SetBlackboardValue",
+						"description": "设置目标位置为家",
+						"properties": {
+							"key": "target_position",
+							"value_type": "string",
+							"value": "home"
+						},
+						"position": {"x": 450, "y": 250},
+						"children": []
+					},
+					{
+						"id": "action_move_home",
+						"type": "Action",
+						"name": "MoveToPosition",
+						"description": "移动回家",
+						"properties": {
+							"speed": 2.5,
+							"tolerance": 0.5,
+							"target_blackboard_key": "home_position"
+						},
+						"position": {"x": 600, "y": 250},
+						"children": []
+					}
+				]
+			}
+		]
+	}
+}
